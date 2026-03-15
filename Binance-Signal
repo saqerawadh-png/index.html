@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>إشارات التداول - Binance</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#030712;color:#e2e8f0;font-family:'Cairo',sans-serif;direction:rtl;min-height:100vh}
+    @keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,40px)}}
+    @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,30px)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+```
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,148,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,148,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.orb1{width:500px;height:500px;background:#00ff94;opacity:.1;top:-200px;right:-150px;animation:drift1 12s ease-in-out infinite}
+.orb2{width:400px;height:400px;background:#a78bfa;opacity:.1;bottom:-100px;left:-100px;animation:drift2 15s ease-in-out infinite}
+
+.container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;position:relative;z-index:1}
+
+.header{text-align:center;margin-bottom:2.5rem}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:.4rem}
+.logo-box{width:52px;height:52px;background:linear-gradient(135deg,#00ff94,#a78bfa);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 0 28px #00ff9444}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;background:linear-gradient(135deg,#fff 30%,#00ff94 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:#64748b;font-family:'IBM Plex Mono',monospace;font-size:.9rem}
+
+.status-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.5rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.7rem 1.4rem;margin-bottom:2rem}
+.status-item{display:flex;align-items:center;gap:.35rem;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:#94a3b8}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#00ff94;animation:pulse 2s infinite}
+
+.disclaimer{background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.18);border-radius:12px;padding:.85rem 1.4rem;margin-bottom:2rem;font-size:.8rem;color:#92400e;text-align:center;line-height:1.7}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.4rem}
+
+.card{background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:1.4rem;position:relative;overflow:hidden;cursor:pointer;backdrop-filter:blur(14px);transition:transform .3s,box-shadow .3s;animation:slideUp .5s ease both}
+.card:hover{transform:translateY(-4px)}
+.card-shine{position:absolute;inset:0;pointer-events:none;border-radius:20px}
+
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem}
+.coin-id{display:flex;align-items:flex-start;gap:.7rem}
+.medal{font-size:1.8rem;line-height:1}
+.coin-name{font-size:1.35rem;font-weight:900;color:#fff}
+.usdt-label{font-size:.78rem;font-weight:400;color:#64748b}
+.trend-pill{display:inline-flex;align-items:center;gap:.25rem;margin-top:.25rem;padding:.18rem .55rem;border-radius:6px;font-size:.7rem;font-weight:700}
+.price-col{text-align:left}
+.price-val{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:600;color:#fff}
+.chg-val{font-family:'IBM Plex Mono',monospace;font-size:.88rem;font-weight:700}
+
+.spark-wrap{margin:.5rem -.4rem .9rem;opacity:.85}
+svg.spark{width:100%;height:44px}
+
+.stats-row{display:flex;gap:.9rem;margin-bottom:1.1rem;align-items:center}
+.stat-box{display:flex;flex-direction:column;gap:.28rem}
+.stat-box.grow{flex:1}
+.s-label{font-size:.68rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.s-val{font-family:'IBM Plex Mono',monospace;font-size:.82rem;font-weight:600}
+.rsi-track{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin:2px 0}
+.rsi-fill{height:100%;border-radius:99px;transition:width .8s ease}
+
+.levels{display:flex;flex-direction:column;gap:.5rem}
+.level-row{display:flex;align-items:center;gap:.65rem;padding:.55rem .75rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);transition:background .2s}
+.level-row:hover{background:rgba(255,255,255,.06)}
+.l-icon{font-size:.95rem;width:20px;text-align:center}
+.l-mid{flex:1}
+.l-lbl{display:block;font-size:.68rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.l-val{font-family:'IBM Plex Mono',monospace;font-size:.86rem;font-weight:600;color:#e2e8f0}
+.l-pct{font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:700}
+
+.extras{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:.7rem;animation:fadeIn .3s ease}
+.score-row{display:flex;align-items:center;gap:.7rem}
+.score-track{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.score-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#a78bfa,#00ff94);transition:width 1s ease}
+.atr-row{display:flex;justify-content:space-between;align-items:center}
+
+.expand-hint{text-align:center;font-size:.68rem;color:#334155;margin-top:.65rem;font-family:'IBM Plex Mono',monospace}
+
+.loading-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding:4rem}
+.spinner{width:56px;height:56px;border:3px solid rgba(0,255,148,.12);border-top-color:#00ff94;border-radius:50%;animation:spin .8s linear infinite}
+.loading-text{font-family:'IBM Plex Mono',monospace;color:#64748b;font-size:.9rem}
+
+.error-box{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);border-radius:16px;padding:2rem;text-align:center;color:#ff4d6d;display:flex;flex-direction:column;align-items:center;gap:1rem}
+
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,148,.09);border:1px solid rgba(0,255,148,.28);color:#00ff94;padding:.7rem 2rem;border-radius:12px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn:hover:not(:disabled){background:rgba(0,255,148,.15);box-shadow:0 0 20px rgba(0,255,148,.2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-wrap{display:flex;justify-content:center;margin-top:2rem}
+.spin-icon{display:inline-block;animation:spin 1s linear infinite}
+
+.footer{text-align:center;margin-top:2.5rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:#1e293b}
+
+@media(max-width:640px){.container{padding:1rem}.grid{grid-template-columns:1fr}}
+```
+
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo-box">📊</div>
+      <h1>إشارات التداول</h1>
+    </div>
+    <p class="subtitle">أفضل 3 عملات · Binance · تحديث تلقائي كل 60 ثانية</p>
+  </div>
+
+  <div class="status-bar" id="statusBar" style="display:none">
+    <span class="status-item"><span class="live-dot"></span> مباشر</span>
+    <span class="status-item" id="updateTime"></span>
+    <span class="status-item">📡 Binance API</span>
+    <span class="status-item">🕯 الشمعة: 4 ساعات</span>
+  </div>
+
+  <div class="disclaimer">⚠️ هذه الإشارات للأغراض التعليمية فقط · ليست نصيحة مالية · تداول بحذر وإدارة رأس مال سليمة</div>
+
+  <div id="content">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span class="loading-text">جاري تحليل السوق...</span>
+    </div>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn" id="refreshBtn" onclick="loadData()">
+      <span id="refreshIcon">↻</span> تحديث يدوي
+    </button>
+  </div>
+
+  <p class="footer">© <span id="yr"></span> إشارات التداول · البيانات من Binance API</p>
+</div>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT'];
+
+// ── حسابات ──
+function calcRSI(closes, period=14){
+  if(closes.length < period+1) return 50;
+  let g=0,l=0;
+  for(let i=closes.length-period;i<closes.length;i++){
+    const d=closes[i]-closes[i-1];
+    if(d>0)g+=d; else l+=Math.abs(d);
+  }
+  const ag=g/period,al=l/period;
+  if(al===0)return 100;
+  return 100-100/(1+ag/al);
+}
+function calcEMA(closes,period){
+  if(closes.length<period)return closes[closes.length-1];
+  const k=2/(period+1);
+  let ema=closes.slice(0,period).reduce((a,b)=>a+b,0)/period;
+  for(let i=period;i<closes.length;i++)ema=closes[i]*k+ema*(1-k);
+  return ema;
+}
+function calcATR(closes,period=14){
+  const trs=[];
+  for(let i=1;i<closes.length;i++)trs.push(Math.abs(closes[i]-closes[i-1]));
+  return trs.slice(-period).reduce((a,b)=>a+b,0)/period;
+}
+
+function scoreAndBuild(raw){
+  return raw.map(({symbol,price,change24h,closes,volumes})=>{
+    const rsi=calcRSI(closes);
+    const ema20=calcEMA(closes,20);
+    const ema50=calcEMA(closes,50);
+    const atr=calcATR(closes);
+    const avgVol=volumes.slice(-10).reduce((a,b)=>a+b,0)/10;
+    const volBoost=volumes[volumes.length-1]/avgVol;
+    let score=0;
+    if(rsi>45&&rsi<70)score+=30; else if(rsi<35)score+=15; else if(rsi>=70)score-=10;
+    if(price>ema20)score+=20;
+    if(ema20>ema50)score+=20;
+    if(volBoost>1.3)score+=15;
+    if(change24h>0)score+=15;
+    const trend=ema20>ema50?'صاعد':'هابط';
+    const entry=price;
+    const stopLoss=price-atr*1.5;
+    const target1=price+atr*2;
+    const target2=price+atr*3.5;
+    return{symbol,price,change24h,closes,rsi,score,trend,volBoost,entry,stopLoss,target1,target2,atr,
+      stopPct:((entry-stopLoss)/entry*100).toFixed(2),
+      t1Pct:((target1-entry)/entry*100).toFixed(2),
+      t2Pct:((target2-entry)/entry*100).toFixed(2),
+      rr:((target1-entry)/(entry-stopLoss)).toFixed(2)};
+  }).sort((a,b)=>b.score-a.score).slice(0,3);
+}
+
+async function fetchOne(symbol){
+  const [t,k]=await Promise.all([
+    fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`).then(r=>r.json()),
+    fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=4h&limit=100`).then(r=>r.json())
+  ]);
+  return{symbol,price:parseFloat(t.lastPrice),change24h:parseFloat(t.priceChangePercent),
+    closes:k.map(c=>parseFloat(c[4])),volumes:k.map(c=>parseFloat(c[5]))};
+}
+
+// ── تنسيق السعر ──
+function fmt(p){
+  if(!p&&p!==0)return'—';
+  if(p>=1000)return p.toLocaleString('en',{maximumFractionDigits:2});
+  if(p>=1)return Number(p).toFixed(4);
+  return Number(p).toFixed(6);
+}
+
+// ── Sparkline ──
+function makeSpark(closes){
+  const data=closes.slice(-20);
+  const mn=Math.min(...data),mx=Math.max(...data);
+  const pts=data.map((c,i)=>`${(i/19)*100},${100-((c-mn)/(mx-mn||1))*100}`).join(' ');
+  const up=data[data.length-1]>data[0];
+  return `<svg class="spark" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <polyline points="${pts}" fill="none" stroke="${up?'#00ff94':'#ff4d6d'}" stroke-width="2.5" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+// ── بطاقة العملة ──
+const MEDALS=['🥇','🥈','🥉'];
+const RC=['#FFD700','#C0C0C0','#CD7F32'];
+
+function makeCard(coin,rank){
+  const rc=RC[rank];
+  const upTrend=coin.trend==='صاعد';
+  const levels=[
+    {icon:'⟶',label:'دخول',val:fmt(coin.entry),pct:'السعر الحالي',color:'#94a3b8'},
+    {icon:'✕',label:'وقف الخسارة',val:fmt(coin.stopLoss),pct:`-${coin.stopPct}%`,color:'#ff4d6d'},
+    {icon:'◎',label:'هدف 1',val:fmt(coin.target1),pct:`+${coin.t1Pct}%`,color:'#00c97a'},
+    {icon:'◉',label:'هدف 2',val:fmt(coin.target2),pct:`+${coin.t2Pct}%`,color:'#00ff94'},
+  ];
+  const rsiColor=coin.rsi>70?'#ff4d6d':coin.rsi<35?'#00ff94':'#f0a500';
+
+  return `
+  <div class="card" style="animation-delay:${rank*0.13}s" onclick="toggleCard(this)"
+    onmouseenter="this.style.boxShadow='0 20px 50px rgba(0,0,0,.5),0 0 25px ${rc}28'"
+    onmouseleave="this.style.boxShadow='none'">
+    <div class="card-shine" style="background:radial-gradient(ellipse at 50% -10%,${rc}1a 0%,transparent 65%)"></div>
+
+    <div class="card-header">
+      <div class="coin-id">
+        <span class="medal">${MEDALS[rank]}</span>
+        <div>
+          <div class="coin-name">${coin.symbol.replace('USDT','')}<span class="usdt-label">/USDT</span></div>
+          <div class="trend-pill" style="background:${upTrend?'#00ff9420':'#ff4d6d20'};color:${upTrend?'#00ff94':'#ff4d6d'};border:1px solid ${upTrend?'#00ff9440':'#ff4d6d40'}">
+            ${upTrend?'↑':'↓'} ${coin.trend}
+          </div>
+        </div>
+      </div>
+      <div class="price-col">
+        <div class="price-val">$${fmt(coin.price)}</div>
+        <div class="chg-val" style="color:${coin.change24h>=0?'#00ff94':'#ff4d6d'}">
+          ${coin.change24h>=0?'+':''}${Number(coin.change24h).toFixed(2)}%
+        </div>
+      </div>
+    </div>
+
+    <div class="spark-wrap">${makeSpark(coin.closes)}</div>
+
+    <div class="stats-row">
+      <div class="stat-box grow">
+        <span class="s-label">RSI</span>
+        <div class="rsi-track"><div class="rsi-fill" style="width:${coin.rsi}%;background:${rsiColor}"></div></div>
+        <span class="s-val" style="color:${rsiColor}">${coin.rsi.toFixed(1)}</span>
+      </div>
+      <div class="stat-box">
+        <span class="s-label">حجم</span>
+        <span class="s-val" style="color:${coin.volBoost>1.5?'#00ff94':'#94a3b8'}">${coin.volBoost.toFixed(2)}x</span>
+      </div>
+      <div class="stat-box">
+        <span class="s-label">R:R</span>
+        <span class="s-val" style="color:#a78bfa">1:${coin.rr}</span>
+      </div>
+    </div>
+
+    <div class="levels">
+      ${levels.map(l=>`
+      <div class="level-row">
+        <span class="l-icon" style="color:${l.color}">${l.icon}</span>
+        <div class="l-mid">
+          <span class="l-lbl">${l.label}</span>
+          <span class="l-val">$${l.val}</span>
+        </div>
+        <span class="l-pct" style="color:${l.color}">${l.pct}</span>
+      </div>`).join('')}
+    </div>
+
+    <div class="extras" style="display:none">
+      <div class="score-row">
+        <span class="s-label">قوة الإشارة</span>
+        <div class="score-track"><div class="score-fill" style="width:${coin.score}%"></div></div>
+        <span class="s-val">${coin.score}/100</span>
+      </div>
+      <div class="atr-row">
+        <span class="s-label">ATR (التقلب)</span>
+        <span class="s-val" style="color:#94a3b8">$${fmt(coin.atr)}</span>
+      </div>
+    </div>
+
+    <div class="expand-hint">▼ تفاصيل</div>
+  </div>`;
+}
+
+function toggleCard(el){
+  const ex=el.querySelector('.extras');
+  const hint=el.querySelector('.expand-hint');
+  const open=ex.style.display==='none';
+  ex.style.display=open?'flex':'none';
+  hint.textContent=open?'▲ إخفاء':'▼ تفاصيل';
+}
+
+// ── تحميل البيانات ──
+let refreshTimer=null;
+
+async function loadData(){
+  const btn=document.getElementById('refreshBtn');
+  const icon=document.getElementById('refreshIcon');
+  btn.disabled=true;
+  icon.className='spin-icon';
+  icon.textContent='↻';
+
+  document.getElementById('content').innerHTML=`
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span class="loading-text">جاري تحليل السوق...</span>
+    </div>`;
+
+  try{
+    const raw=await Promise.all(COINS.map(fetchOne));
+    const top3=scoreAndBuild(raw);
+
+    document.getElementById('content').innerHTML=
+      `<div class="grid">${top3.map((c,i)=>makeCard(c,i)).join('')}</div>`;
+
+    document.getElementById('statusBar').style.display='flex';
+    document.getElementById('updateTime').textContent=`⏱ ${new Date().toLocaleTimeString('ar')}`;
+
+  }catch(e){
+    document.getElementById('content').innerHTML=`
+      <div class="error-box">
+        <span style="font-size:2rem">⚠️</span>
+        <span>تعذّر الاتصال بـ Binance API. تحقق من الاتصال بالإنترنت.</span>
+        <button class="btn" onclick="loadData()">إعادة المحاولة</button>
+      </div>`;
+  }finally{
+    btn.disabled=false;
+    icon.className='';
+    icon.textContent='↻';
+  }
+
+  if(refreshTimer)clearInterval(refreshTimer);
+  refreshTimer=setInterval(loadData,60000);
+}
+
+loadData();
+</script>
+
+</body>
+</html>
